@@ -1,30 +1,27 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
 import { dummyPayslipData } from "../assets/assets";
 import Loading from "../components/Loading";
 import { format } from "date-fns";
 
 const PrintPayslip = () => {
-
-  const {id} = useParams()
-  const [payslip, setPayslip] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { id } = useParams();
+  const [payslip, setPayslip] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setPayslip(dummyPayslipData.find((slip) => slip._id === id))
+    setPayslip(dummyPayslipData.find((slip) => slip._id === id));
     setTimeout(() => {
-      setLoading(false)
-    },1000)
-  },[id])
+      setLoading(false);
+    }, 1000);
+  }, [id]);
 
-  if (loading) return <Loading/>
-  
-  if(!payslip) {
+  if (loading) return <Loading />;
+
+  if (!payslip) {
     return (
-      <p className="text-center py-12 text-slate-400">
-        Payslip not found
-      </p>
-    )
+      <p className="text-center py-12 text-slate-400">Payslip not found</p>
+    );
   }
 
   return (
@@ -34,7 +31,7 @@ const PrintPayslip = () => {
           PAYSLIP
         </h1>
         <p className="text-slate-500 text-sm mt-1">
-          {format(new Date(payslip.year, payslip.month - 1), 'MMMM yyyy')}
+          {format(new Date(payslip.year, payslip.month - 1), "MMMM yyyy")}
         </p>
       </div>
       <div className="grid grid-cols-2 gap-6 mb-8">
@@ -70,7 +67,7 @@ const PrintPayslip = () => {
             Period
           </p>
           <p className="font-semibold text-slate-900">
-            {format(new Date(payslip.year, payslip.month - 1), 'MMMM yyyy')}
+            {format(new Date(payslip.year, payslip.month - 1), "MMMM yyyy")}
           </p>
         </div>
       </div>
@@ -89,36 +86,28 @@ const PrintPayslip = () => {
           </thead>
           <tbody>
             <tr className="border-t border-slate-100">
-              <td className="py-3 px-4 text-slate-700">
-                Basic Salary
-              </td>
+              <td className="py-3 px-4 text-slate-700">Basic Salary</td>
               <td className="text-right py-3 px-4 text-slate-900 font-medium">
                 ${payslip.basicSalary?.toLocaleString()}
               </td>
             </tr>
 
             <tr className="border-t border-slate-100">
-              <td className="py-3 px-4 text-slate-700">
-                Allowances
-              </td>
+              <td className="py-3 px-4 text-slate-700">Allowances</td>
               <td className="text-right py-3 px-4 text-slate-900 font-medium">
                 +${payslip.allowances?.toLocaleString()}
               </td>
             </tr>
 
             <tr className="border-t border-slate-100">
-              <td className="py-3 px-4 text-slate-700">
-                Deductions
-              </td>
+              <td className="py-3 px-4 text-slate-700">Deductions</td>
               <td className="text-right py-3 px-4 text-slate-900 font-medium">
                 -${payslip.deductions?.toLocaleString()}
               </td>
             </tr>
 
             <tr className="border-t-2 border-slate-200 bg-slate-50">
-              <td className="py-4 px-4 font-bold text-slate-700">
-                Net Salary
-              </td>
+              <td className="py-4 px-4 font-bold text-slate-700">Net Salary</td>
               <td className="text-right py-4 px-4 text-slate-900 font-bold text-lg">
                 ${payslip.netSalary?.toLocaleString()}
               </td>
@@ -127,12 +116,15 @@ const PrintPayslip = () => {
         </table>
       </div>
       <div className="text-center">
-        <button className="btn-primary print:hidden" onClick={() => window.print()}>
+        <button
+          className="btn-primary print:hidden"
+          onClick={() => window.print()}
+        >
           Print Payslip
         </button>
       </div>
     </div>
-  )
+  );
 };
 
 export default PrintPayslip;
