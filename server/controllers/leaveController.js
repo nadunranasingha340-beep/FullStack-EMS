@@ -59,7 +59,7 @@ export const createLeave = async (req, res) => {
 
 // Get leave
 // GET path => /api/leaves
-export const geteLeave = async (req, res) => {
+export const getLeaves = async (req, res) => {
     try {
         const session = req.session
         const isAdmin = session.role === "ADMIN"
