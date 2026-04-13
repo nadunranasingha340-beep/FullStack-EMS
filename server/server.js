@@ -12,7 +12,8 @@ import payslipRouter from "./routes/payslipsRoutes.js";
 import dashboardRouter from "./routes/dashboardRoutes.js";
 
 import { serve } from "inngest/express";
-import { inngest, functions } from "./inngest/index.js"
+import { inngest, functions } from "./inngest/index.js";
+
 
 const app = express()
 
@@ -34,11 +35,7 @@ app.use("/api/leaves", leaveRouter)
 app.use("/api/payslips", payslipRouter)
 app.use("/api/dashboard", dashboardRouter)
 
-app.use("/api/inngest", serve({ 
-    client: inngest, 
-    functions,
-    signingKey: process.env.INNGEST_SIGNING_KEY 
-}));
+app.use("/api/inngest", serve({ client: inngest, functions}));
 
 await connectDB()
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
