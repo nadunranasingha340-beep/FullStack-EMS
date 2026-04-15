@@ -11,7 +11,7 @@ export const inngest = new Inngest({ id: "fullstack-ems-new" });
 const autoCheckOut = inngest.createFunction(
   {
     id: "auto-check-out",
-    triggers: [{ event: "employee/check-out" }],
+    triggers: [{ event: "employee/check-out" }]
   },
   async ({ event, step }) => {
     const { employeeId, attendanceId } = event.data;
@@ -65,11 +65,10 @@ const autoCheckOut = inngest.createFunction(
 );
 
 // Send Email to admin, If admin doesn't take action on leave application within 24 hours
-
 const leaveApplicationReminder = inngest.createFunction(
   {
     id: "leave-application-reminder",
-    triggers: [{ event: "leave/pending" }],
+    triggers: [{ event: "leave/pending" }]
   },
   async ({ event, step }) => {
     const { leaveApplicationId } = event.data;
@@ -105,17 +104,16 @@ const leaveApplicationReminder = inngest.createFunction(
 );
 
 // Cron: Check attendence at 11.30 AM IST (06:00 UTC) and email absent employees
-
 const attendanceReminderCron = inngest.createFunction(
   {
     id: "attendance-reminder-cron",
-    triggers: [{ cron: "TZ=Asia/Kolkata 30 11 * * *" }], // 06:00 UTC = 11.30 AM IST
+    triggers: [{ cron: "TZ=Asia/Kolkata 30 11 * * *" }] // 06:00 UTC = 11.30 AM IST
   },
   async ({ step }) => {
     // Step 1: Get today's date range (IST)
     const today = await step.run("get-today-date", () => {
       const startUTC = new Date(
-        new Date().toLocaleDateString('en-CA, {timeZone: "Asia/Kolkata"}') +
+        new Date().toLocaleDateString("en-CA", {timeZone: "Asia/Kolkata"}) +
           "T00:00:00 + 05:30",
       );
       const endUTC = new Date(startUTC.getTime() + 24 * 60 * 60 * 1000);
@@ -142,7 +140,7 @@ const attendanceReminderCron = inngest.createFunction(
       const leaves = await LeaveApplication.find({
         status: "APPROVED",
         startDate: { $lte: new Date(today.endUTC) },
-        endDate: { $gte: new Date(today.startDate) },
+        endDate: { $gte: new Date(today.startUTC) },
       }).lean();
       return leaves.map((l) => l.employeeId.toString());
     });
