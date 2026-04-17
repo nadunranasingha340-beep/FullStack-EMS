@@ -11,7 +11,7 @@ export const inngest = new Inngest({ id: "fullstack-ems-new" });
 const autoCheckOut = inngest.createFunction(
   {
     id: "auto-check-out",
-    triggers: [{ event: "employee/check-out" }]
+    triggers: [{ event: "employee/check-out" }],
   },
   async ({ event, step }) => {
     const { employeeId, attendanceId } = event.data;
@@ -68,7 +68,7 @@ const autoCheckOut = inngest.createFunction(
 const leaveApplicationReminder = inngest.createFunction(
   {
     id: "leave-application-reminder",
-    triggers: [{ event: "leave/pending" }]
+    triggers: [{ event: "leave/pending" }],
   },
   async ({ event, step }) => {
     const { leaveApplicationId } = event.data;
@@ -107,13 +107,13 @@ const leaveApplicationReminder = inngest.createFunction(
 const attendanceReminderCron = inngest.createFunction(
   {
     id: "attendance-reminder-cron",
-    triggers: [{ cron: "TZ=Asia/Kolkata 30 11 * * *" }] // 06:00 UTC = 11.30 AM IST
+    triggers: [{ cron: "TZ=Asia/Kolkata 30 11 * * *" }], // 06:00 UTC = 11.30 AM IST
   },
   async ({ step }) => {
     // Step 1: Get today's date range (IST)
     const today = await step.run("get-today-date", () => {
       const startUTC = new Date(
-        new Date().toLocaleDateString("en-CA", {timeZone: "Asia/Kolkata"}) +
+        new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }) +
           "T00:00:00+05:30",
       );
       const endUTC = new Date(startUTC.getTime() + 24 * 60 * 60 * 1000);
@@ -179,11 +179,12 @@ const attendanceReminderCron = inngest.createFunction(
                                 <br />
                                 <p style="font-size: 16px;">Best Regards,</p>
                                 <p style="font-size: 16px;"><strong>QuickEMS</strong></p>
-                            </div>`,
+                            </div>`
           });
         });
       });
     }
+    await Promise.all(emailPromises);
 
     return {
       totalActive: activeEmployees.length,
