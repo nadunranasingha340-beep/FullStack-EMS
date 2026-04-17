@@ -3,16 +3,19 @@ import { dummyAdminDashboardData, dummyEmployeeDashboardData } from "../assets/a
 import Loading from "../components/Loading";
 import EmployeeDashboard from "../components/EmployeeDashboard";
 import AdminDashboard from "../components/AdminDashboard";
+import api from "../api/axios"
+import toast from "react-hot-toast"
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setData(dummyAdminDashboardData);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    api.get('/dashboard').then((res) => 
+      setData(res.data)).catch((err) => 
+        toast.error(
+          err.response?.data?.error || err?.message
+        )).finally(() => setLoading(false))
   }, []);
 
   if (loading) {
@@ -28,16 +31,9 @@ const Dashboard = () => {
     )}
 
   if (data.role === 'ADMIN') {
-    return (
-      <div>
-        <AdminDashboard data={data}/>
-      </div>
-    )
+    return <AdminDashboard data={data}/>
   } else {
-    return (
-    <div>
-      <EmployeeDashboard data={data}/>
-    </div>)
+    return <EmployeeDashboard data={data}/>
   }
 
 };
