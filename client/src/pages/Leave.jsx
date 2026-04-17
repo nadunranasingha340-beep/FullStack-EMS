@@ -4,39 +4,51 @@ import Loading from "../components/Loading";
 import { PalmtreeIcon, PlusIcon, ThermometerIcon, UmbrellaIcon } from "lucide-react"
 import LeaveHistory from "../components/leave/LeaveHistory";
 import ApplyLeaveModal from "../components/leave/ApplyLeaveModal";
+import { useAuth } from "../context/AuthContext";
+import api from "../api/axios";
+import toast from "react-hot-toast"
 
 const Leave = () => {
 
+  const {user} = useAuth()
   const [leaves, setLeaves] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [isDeleted, setIsDeleted] = useState(false)
 
-  const isAdmin = false
+  const isAdmin = user?.role === "ADMIN"
 
-  const fetchLeaves = useCallback(() => {
-    setLeaves(dummyLeaveData)
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+  const fetchLeaves = useCallback(async () => {
+    try {
+      const res = await api.get('/leave')
+      setLeaves(res.data.data || [])
+      if (res.data.employee?.isDeleted) {
+        setIsDeleted(true)
+      }
+    } catch (error) {
+        toast.error(error?.response?.data?.error || error.message)
+    } finally {
+      setLoading(false)
+    }
   }, [])
-
+  
   useEffect(() => {
     fetchLeaves()
   }, [fetchLeaves])
 
   if(loading) return <Loading/>
-
+  
   const approvedLeaves = leaves.filter((l) => l.status === "APPROVED");
   const sickCount = approvedLeaves.filter((l) => l.type === "SICK").length
   const casualCount = approvedLeaves.filter((l) => l.type === "CASUAL").length
   const annualCount = approvedLeaves.filter((l) => l.type === "ANNUAL").length
-
+  
   const leaveStats = [
-    {lable: "Sick Leave", value: sickCount, icon: ThermometerIcon},
-    {lable: "Casual Leave", value: casualCount, icon: UmbrellaIcon},
-    {lable: "Annual Leave", value: annualCount, icon: PalmtreeIcon},
+    {label: "Sick Leave", value: sickCount, icon: ThermometerIcon},
+    {label: "Casual Leave", value: casualCount, icon: UmbrellaIcon},
+    {label: "Annual Leave", value: annualCount, icon: PalmtreeIcon},
   ]
+
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start
@@ -58,7 +70,7 @@ const Leave = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-8">
           {leaveStats.map((s) => (
             <div 
-              key={s.lable}
+              key={s.label}
               className="card card-hover p-5 sm:p-6 flex items-center gap-4 relative overflow-hidden group"
             >
               <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full bg-slate-500/70 group-hover:bg-indigo-500/70"/>
@@ -67,7 +79,7 @@ const Leave = () => {
               </div>
               <div>
                 <p className="text-sm text-slate-500">
-                  {s.lable}
+                  {s.label}
                 </p>
                 <p className="text-2xl font-bold text-slate-900 tracking-tight">
                   {s.value} <span className="text-sm font-normal text-slate-400">
